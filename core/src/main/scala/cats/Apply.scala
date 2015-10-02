@@ -8,7 +8,7 @@ import simulacrum.typeclass
  * Must obey the laws defined in cats.laws.ApplyLaws.
  */
 @typeclass(excludeParents=List("ApplyArityFunctions"))
-trait Apply[F[_]] extends Functor[F] with ApplyArityFunctions[F] { self =>
+trait Apply[F[_]] extends Functor[F] with Monoidal[F] with ApplyArityFunctions[F] { self =>
 
   /**
    * Given a value and a function in the Apply context, applies the
@@ -45,6 +45,9 @@ trait Apply[F[_]] extends Functor[F] with ApplyArityFunctions[F] { self =>
       def F: Apply[F] = self
       def G: Apply[G] = GG
     }
+
+  override def product[A, B](fa: F[A], fb: F[B]): F[(A, B)] = ap(fb)(map(fa)(a => b => (a, b)))
+
 }
 
 trait CompositeApply[F[_], G[_]]
